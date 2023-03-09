@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+[RequireComponent(typeof(AudioSource))]
 public class PlayerController : MonoBehaviour
 {
     public float acceleration = 10;
@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
     private bool fireButtonDown = false;
 
     private CameraScript cs;
+    public AudioClip gunFire;
+    AudioSource audioSource;
 
     // Start is called before the first frame update
     void Start()
@@ -22,6 +24,7 @@ public class PlayerController : MonoBehaviour
         gunLeft = transform.Find("GunLeft");
         gunRight = transform.Find("GunRight");
         cs = Camera.main.GetComponent<CameraScript>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -34,9 +37,9 @@ public class PlayerController : MonoBehaviour
         controlls = new Vector2(h, v);
 
         //check and reposition ship if off screen
-        //maksymalne oddalenie od œrodka w poziomie to szerokoœæ widzianego obszaru / 2
+        //maksymalne oddalenie od ï¿½rodka w poziomie to szerokoï¿½ï¿½ widzianego obszaru / 2
         float maxHorizontal = cs.worldWidth / 2; 
-        //to samo dla wysokoœæi
+        //to samo dla wysokoï¿½ï¿½i
         float maxVertical = cs.worldHeight / 2;
 
         if(Mathf.Abs(transform.position.x) > maxHorizontal)
@@ -70,6 +73,7 @@ public class PlayerController : MonoBehaviour
             bullet1.transform.parent = null;
             bullet1.GetComponent<Rigidbody>().AddForce(transform.forward * 10,
                                                         ForceMode.VelocityChange);
+            audioSource.PlayOneShot(gunFire, 0.5F);
             Destroy(bullet1, 5);
             GameObject bullet2 = Instantiate(bulletPrefab, gunRight.position, Quaternion.identity);
             bullet2.transform.parent = null;
@@ -88,7 +92,7 @@ public class PlayerController : MonoBehaviour
             //game over
             Time.timeScale = 0;
 
-            //poka¿ ekran koñcowy
+            //pokaï¿½ ekran koï¿½cowy
             GameObject gameOverScreen = GameObject.Find("Canvas").transform.Find("GameOverScreen").gameObject;
             gameOverScreen.SetActive(true);
 
